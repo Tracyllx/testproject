@@ -1,0 +1,462 @@
+var isShowBtm = false; //用于判断是否显示了底部菜单
+
+var imageLayer = new AMap.ImageLayer({
+  url: './img/map1.png',
+  // url: 'https://hi.cxtrip.cc/cxyTicket/html/haiquanwan/img/map1.png',
+  zooms: [3, 20],
+  bounds: new AMap.Bounds(
+    [113.110499, 22.066235],
+    [113.118631, 22.074587]
+  ),
+});
+
+var map = new AMap.Map("container", {
+  // viewMode: '3D', //值有'3D'、'2D'，缺省为'2D'，设置为3D时将在webgl环境满足条件的的浏览器中显示为三维地图
+  // pitch: 45, //设置地图的倾角，0-83
+  rotation: 0, //设置地图的旋转角度
+  resizeEnable: true, //是否监控地图容器尺寸变化，默认值为false
+  center: [113.114962, 22.070719],
+  zoom: 17,
+  layers: [
+    new AMap.TileLayer(),
+    imageLayer
+  ]
+});
+
+//信息弹窗体
+const infoWindow = new AMap.InfoWindow({
+  offset: new AMap.Pixel(0, -30)
+});
+
+// 信息弹窗体点击事件
+function markerClick(e) {
+  infoWindow.setContent(e.target.content);
+  infoWindow.open(map, e.target.getPosition());
+  var index;
+  if (e.target.content.indexOf('海泉湾拓展训练营') > 0) {
+    index = 0;
+  } else if (e.target.content.indexOf('加勒比水公园') > 0) {
+    index = 1;
+  } else if (e.target.content.indexOf('垂直极限') > 0) {
+    index = 2;
+  } else if (e.target.content.indexOf('海泉神塔') > 0) {
+    index = 3;
+  }
+  $('.rode-item').eq(index).siblings().find('span').removeClass('active');
+  $('.rode-item').eq(index).siblings().find('p').removeClass('active');
+  $('.rode-item').eq(index).find('span').addClass('active');
+  $('.rode-item').eq(index).find('p').addClass('active');
+}
+
+// 获取当前位置信息
+// 加载地图，调用浏览器定位服务
+// map.plugin('AMap.Geolocation', function () {
+//   // geolocation 是获得地理位置
+//   const geolocation = new AMap.Geolocation({
+//     enableHighAccuracy: true, //是否使用高精度定位，默认:true
+//     timeout: 10000, //超过10秒后停止定位，默认：无穷大
+//     buttonOffset: new AMap.Pixel(10, 20), //定位按钮与设置的停靠位置的偏移量，默认：Pixel(10, 20)
+//     zoomToAccuracy: true, //定位成功后调整地图视野范围使定位位置及精度范围视野内可见，默认：false
+//     buttonPosition: 'LB',
+//     useNative: true,
+//     showMarker: false, //定位成功后在定位到的位置显示点标记，默认：true
+//     showCircle: false, //定位成功后用圆圈表示定位精度范围，默认：true
+//     panToLocation: false, //定位成功后将定位到的位置作为地图中心点，默认：true
+//   });
+//   map.addControl(geolocation);
+//   geolocation.getCurrentPosition();
+//   AMap.event.addListener(geolocation, 'complete', onComplete); //返回定位信息
+//   AMap.event.addListener(geolocation, 'error', onError); //返回定位出错信息
+// });
+// 解析定位结果：Lat是经度，Lng纬度
+// function onComplete(data) {
+//   const Lng = data.position.getLng();
+//   const Lat = data.position.getLat();
+//   console.log(Lat + ',' + Lng);
+// }
+// 解析定位错误信息
+// function onError(data) {
+//   alert("定位失败，请刷新再次获取");
+// }
+
+// 去这里
+function gotoFun(location) {
+  console.log('9999999999')
+}
+
+// 预定
+function yuyueFun(e) {
+  console.log(e)
+}
+
+// 语音
+function yuyinFun(e) {
+
+}
+
+$(function () {
+  // 我的（跳转到小程序）
+  $('#myBtn').bind('click', function () {
+    console.log('跳转小程序')
+    wx.miniProgram.redirectTo({
+      url: '../personal/index'
+    });
+  });
+  // 头部菜单
+  $('.nav-item').bind('click', function () {
+    $(this).find('.nav-item-con').addClass('nav-active');
+    $(this).siblings().find('.nav-item-con').removeClass('nav-active');
+    $(this).find('.nav-img1').addClass('disnone');
+    $(this).find('.nav-img2').removeClass('disnone');
+    $(this).siblings().find('.nav-img1').removeClass('disnone');
+    $(this).siblings().find('.nav-img2').addClass('disnone');
+    if ($(this).index() == 0) {
+      // ---------------------------------线路------------------------------------------------------------------
+      isShowBtm = !isShowBtm;
+      if (isShowBtm === false) {
+        $('.rode-line').animate({ // 隐藏线路
+          height: '0px'
+        }, 400);
+        map.clearMap(); // 清除地图覆盖物
+      } else {
+        $('.rode-line').animate({ // 显示线路
+          height: '152px'
+        }, 400);
+        $('.rode-item').eq(0).siblings().find('span').removeClass('active');
+        $('.rode-item').eq(0).siblings().find('p').removeClass('active');
+        $('.rode-item').eq(0).find('span').addClass('active');
+        $('.rode-item').eq(0).find('p').addClass('active');
+        map.clearMap(); // 清除地图覆盖物
+        const markers = [{
+          btntxt: '<div class="marker-btn-box"><a href="./msg.html?id=1" class="marker-btn gotoBtn"><img src="./img/goto_w.png" alt=""><span>去这里</span></a></div>',
+          title: '<p class="marker-title">海泉神塔</p><p class="marker-con">27米高的灯塔高高耸立，熊熊的灯光照耀着全岛。幸福之神希莫娜通过灯火将祝福传递给每一个人。灯塔的底部隐约出现了五位善灵的头像，从五个善灵口中流出一汩汩甘甜的温泉水，给予人们神奇的力量。</p>',
+          icon: './img/num4.png',
+          position: [113.114984, 22.06942]
+        }, {
+          btntxt: '<div class="marker-btn-box"><a href="./msg.html?id=2" class="marker-btn gotoBtn"><img src="./img/goto_w.png" alt=""><span>去这里</span></a></div>',
+          title: '<p class="marker-title">垂直极限</p><p class="marker-con">中国第一台具有双重功能的"垂直极限"，60米的高塔让您同时感受失重和超重的刺激，突然身体垂直向下，让您头脑空白，瞬间体验抛却一切烦恼，彻底放纵压抑的极度快感，享受极限疯狂</p>',
+          icon: './img/num3.png',
+          position: [113.114155, 22.070107]
+        }, {
+          btntxt: '<div class="marker-btn-box"><a href="./msg.html?id=3" class="marker-btn gotoBtn"><img src="./img/goto_w.png" alt=""><span>去这里</span></a></div>',
+          title: '<p class="marker-title">加勒比水公园</p><p class="marker-con">加勒比水公园运用先进的造浪技术，使游客真切体验惊涛骇浪之感，更设有儿童戏水区、水上竞技区、水上T台和泳池等多项水上游乐设施，游客们可以根据个人的喜好自由选择。</p>',
+          icon: './img/num2.png',
+          position: [113.114739, 22.070512]
+        }, {
+          btntxt: '<div class="marker-btn-box"><a href="./msg.html?id=4" class="marker-btn gotoBtn"><img src="./img/goto_w.png" alt=""><span>去这里</span></a></div>',
+          title: '<p class="marker-title">海泉湾拓展训练营</p><p class="marker-con">国际先进的拓展训练器材，完善的配套设施，精锐的培训师资队伍，国际最新培训理念，为......</p>',
+          icon: './img/num1.png',
+          position: [113.115387, 22.071534]
+        }];
+        markers.forEach(function (marker) { // 添加点到地图上
+          const newObj = new AMap.Marker({
+            map: map,
+            icon: marker.icon,
+            position: [marker.position[0], marker.position[1]],
+            offset: new AMap.Pixel(-12, -36)
+          });
+          newObj.content = '<div class="marker-box">' + marker.title + marker.btntxt + '</div>';
+          newObj.on('click', markerClick);
+          newObj.emit('click', {
+            target: newObj
+          });
+        });
+        map.setFitView(); // 自动适配到合适视野范围；无参数，默认包括所有覆盖物的情况
+      }
+    } else if ($(this).index() == 1) {
+      // ---------------------------------餐饮------------------------------------------------------------------
+      isShowBtm = false; //关闭了底部弹窗
+      $('.rode-line').animate({ // 隐藏线路
+        height: '0px'
+      }, 400);
+      map.clearMap(); // 清除地图覆盖物
+      const _html = '<div class="marker-btn-box"><a href="./msg.html" class="marker-btn yuyueBtn"><img src="./img/yuyue_w.png" alt=""><span>预定</span></a><a href="./msg.html" class="marker-btn gotoBtn"><img src="./img/goto_w.png" alt=""><span>去这里</span></a></div>';
+      const markers = [{
+        title: '<p class="marker-title">海港餐厅</p><p class="marker-con">海港餐厅，主营海鲜和特色的港式点心、菜式，自开业以来，深受游客的欢迎......</p>',
+        icon: './img/eat.png',
+        position: [113.116201, 22.069248]
+      }];
+      markers.forEach(function (marker) { // 添加点到地图上
+        const newObj = new AMap.Marker({
+          map: map,
+          icon: marker.icon,
+          position: [marker.position[0], marker.position[1]],
+          offset: new AMap.Pixel(-12, -36)
+        });
+        newObj.content = '<div class="marker-box">' + marker.title + _html + '</div>';
+        newObj.on('click', markerClick);
+        newObj.emit('click', {
+          target: newObj
+        });
+      });
+      map.setFitView(); // 自动适配到合适视野范围；无参数，默认包括所有覆盖物的情况
+    } else if ($(this).index() == 2) {
+      // ---------------------------------游乐------------------------------------------------------------------
+      isShowBtm = false; //关闭了底部弹窗
+      $('.rode-line').animate({ // 隐藏线路
+        height: '0px'
+      }, 400);
+      map.clearMap(); // 清除地图覆盖物
+      const _html = '<div class="marker-btn-box"><a href="./msg.html" class="marker-btn yuyinBtn"><img src="./img/yuyin_w.png" alt=""><span>语音</span></a><a href="./msg.html" class="marker-btn yuyueBtn"><img src="./img/yuyue_w.png" alt=""><span>预定</span></a><a href="./msg.html" class="marker-btn gotoBtn"><img src="./img/goto_w.png" alt=""><span>去这里</span></a></div>';
+      const markers = [{
+        title: '<p class="marker-title">垂直极限</p><p class="marker-con">中国第一台具有双重功能的"垂直极限"，60米的高塔让您同时感受失重和超重的刺激，突然身体垂直向下，让您头脑空白，瞬间体验抛却一切烦恼，彻底放纵压抑的极度快感，享受极限疯狂</p>',
+        icon: './img/play.png',
+        position: [113.114155, 22.070107]
+      }, {
+        title: '<p class="marker-title">加勒比水公园</p><p class="marker-con">加勒比水公园运用先进的造浪技术，使游客真切体验惊涛骇浪之感，更设有儿童戏水区、水上竞技区、水上T台和泳池等多项水上游乐设施，游客们可以根据个人的喜好自由选择。</p>',
+        icon: './img/play.png',
+        position: [113.114739, 22.070512]
+      }, {
+        title: '<p class="marker-title">海泉湾拓展训练营</p><p class="marker-con">国际先进的拓展训练器材，完善的配套设施，精锐的培训师资队伍，国际最新培训理念，为......</p>',
+        icon: './img/play.png',
+        position: [113.115387, 22.071534]
+      }, {
+        title: '<p class="marker-title">云霄飞车</p><p class="marker-con">中国第一座弹射式"云霄飞车"，首先冲上34米的高塔，再以时速86公里俯冲，然后再冲上一个垂直的360度环转。环转后，云霄飞车沿倾斜轨道回......</p>',
+        icon: './img/play.png',
+        position: [113.115775, 22.070463]
+      }];
+      markers.forEach(function (marker) { // 添加点到地图上
+        const newObj = new AMap.Marker({
+          map: map,
+          icon: marker.icon,
+          position: [marker.position[0], marker.position[1]],
+          offset: new AMap.Pixel(-12, -36)
+        });
+        newObj.content = '<div class="marker-box">' + marker.title + _html + '</div>';
+        newObj.on('click', markerClick);
+        newObj.emit('click', {
+          target: newObj
+        });
+      });
+      map.setFitView(); // 自动适配到合适视野范围；无参数，默认包括所有覆盖物的情况
+    } else if ($(this).index() == 3) {
+      // ---------------------------------观光车------------------------------------------------------------------
+      isShowBtm = false; //关闭了底部弹窗
+      $('.rode-line').animate({ // 隐藏线路
+        height: '0px'
+      }, 400);
+      map.clearMap(); // 清除地图覆盖物
+      $('.mask-box').show(); //显示遮罩层
+      $('.msg-box').show(); // 显示弹窗
+      $('.msg-con').html('').html('确定呼叫观光车？');
+      $('.msg-cancel').bind('click', function () {
+        $('.msg-box').hide(); // 隐藏弹窗
+        $('.mask-box').hide(); //隐藏遮罩层
+      });
+      $('.msg-confirm').bind('click', function () {
+        $('.msg-con').html('').html('观光车已经在来的路上，请稍等');
+      });
+    }
+  });
+
+  // 线路：1、2、3、4点击时
+  $('.rode-item').bind('click', function () {
+    $(this).siblings().find('span').removeClass('active');
+    $(this).siblings().find('p').removeClass('active');
+    $(this).find('span').addClass('active');
+    $(this).find('p').addClass('active');
+    const index = 4 - $(this).find('span').html();
+    const _html = '<div class="marker-btn-box"><a href="./msg.html" class="marker-btn gotoBtn"><img src="./img/goto_w.png" alt=""><span>去这里</span></a></div>';
+    const markers = [{
+      title: '<p class="marker-title">海泉神塔</p><p class="marker-con">27米高的灯塔高高耸立，熊熊的灯光照耀着全岛。幸福之神希莫娜通过灯火将祝福传递给每一个人。灯塔的底部隐约出现了五位善灵的头像，从五个善灵口中流出一汩汩甘甜的温泉水，给予人们神奇的力量。</p>',
+      icon: './img/num4.png',
+      position: [113.114984, 22.06942]
+    }, {
+      title: '<p class="marker-title">垂直极限</p><p class="marker-con">中国第一台具有双重功能的"垂直极限"，60米的高塔让您同时感受失重和超重的刺激，突然身体垂直向下，让您头脑空白，瞬间体验抛却一切烦恼，彻底放纵压抑的极度快感，享受极限疯狂</p>',
+      icon: './img/num3.png',
+      position: [113.114155, 22.070107]
+    }, {
+      title: '<p class="marker-title">加勒比水公园</p><p class="marker-con">加勒比水公园运用先进的造浪技术，使游客真切体验惊涛骇浪之感，更设有儿童戏水区、水上竞技区、水上T台和泳池等多项水上游乐设施，游客们可以根据个人的喜好自由选择。</p>',
+      icon: './img/num2.png',
+      position: [113.114739, 22.070512]
+    }, {
+      title: '<p class="marker-title">海泉湾拓展训练营</p><p class="marker-con">国际先进的拓展训练器材，完善的配套设施，精锐的培训师资队伍，国际最新培训理念，为......</p>',
+      icon: './img/num1.png',
+      position: [113.115387, 22.071534]
+    }];
+    const newObj = new AMap.Marker({
+      map: map,
+      icon: markers[index].icon,
+      position: [markers[index].position[0], markers[index].position[1]],
+      offset: new AMap.Pixel(-12, -36)
+    });
+    newObj.content = '<div class="marker-box">' + markers[index].title + _html + '</div>';
+    newObj.on('click', markerClick);
+    newObj.emit('click', {
+      target: newObj
+    });
+    map.setFitView(); // 自动适配到合适视野范围；无参数，默认包括所有覆盖物的情况
+  });
+
+  // 点击遮罩层
+  $('.mask-box').bind('click', function () {
+    isShowBtm = false; //关闭了底部弹窗
+    $(this).hide(); //隐藏遮罩层
+    // 菜单
+    $('.right-menu').animate({
+      height: '0px'
+    }, 400);
+    // 提示弹窗
+    $('.msg-box').hide(); // 隐藏弹窗
+  });
+
+  // 右侧菜单图标
+  $('.right-item').bind('click', function () {
+    if (isShowBtm == false) {
+      if ($(this).index() == 0) {
+        // ---------------------------------消息------------------------------------------------------------------
+        $(this).find('img').eq(0).toggleClass('disnone');
+        $(this).find('img').eq(1).toggleClass('disnone');
+        $('.ativity-box').toggleClass('ativity-box-a');
+        $('.ativity-info').addClass('disnone');
+        $('.ativity-con').bind('click', function () {
+          $('.ativity-info').toggleClass('disnone');
+        });
+      } else if ($(this).index() == 1) {
+        // ---------------------------------菜单------------------------------------------------------------------
+        isShowBtm = true; //打开了底部弹窗
+        $('.mask-box').show(); //显示遮罩层
+        $('.right-menu').animate({
+          height: '120px'
+        }, 400);
+      } else if ($(this).index() == 2) {
+        // ---------------------------------红包优惠券------------------------------------------------------------------
+      } else if ($(this).index() == 3) {
+        // ---------------------------------客服------------------------------------------------------------------
+      }
+    }
+  });
+
+  // 菜单列表点击时
+  $('.right-menu-item').bind('click', function () {
+    isShowBtm = false;
+    $('.mask-box').hide(); //隐藏遮罩层
+    $('.right-menu').animate({
+      height: '0px'
+    }, 400);
+    if ($(this).index() == 0) {
+      // ---------------------------------停车场------------------------------------------------------------------
+      map.clearMap(); // 清除地图覆盖物
+      const _html = '<div class="marker-btn-box"><a href="./msg.html" class="marker-btn gotoBtn"><img src="./img/goto_w.png" alt=""><span>去这里</span></a></div>';
+      const markers = [{
+        title: '<p class="marker-title">停车场</p>',
+        icon: './img/park.png',
+        position: [113.115042, 22.066812]
+      }, {
+        title: '<p class="marker-title">停车场</p>',
+        icon: './img/park.png',
+        position: [113.117151, 22.069745]
+      }, {
+        title: '<p class="marker-title">停车场</p>',
+        icon: './img/park.png',
+        position: [113.116705, 22.067816]
+      }];
+      markers.forEach(function (marker) { // 添加点到地图上
+        const newObj = new AMap.Marker({
+          map: map,
+          icon: marker.icon,
+          position: [marker.position[0], marker.position[1]],
+          offset: new AMap.Pixel(-12, -36)
+        });
+        newObj.content = '<div class="marker-box">' + marker.title + _html + '</div>';
+        newObj.on('click', markerClick);
+        newObj.emit('click', {
+          target: newObj
+        });
+      });
+      map.setFitView(); // 自动适配到合适视野范围；无参数，默认包括所有覆盖物的情况
+    } else if ($(this).index() == 1) {
+      // ---------------------------------卫生间------------------------------------------------------------------
+      map.clearMap(); // 清除地图覆盖物
+      const _html = '<div class="marker-btn-box"><a href="./msg.html" class="marker-btn gotoBtn"><img src="./img/goto_w.png" alt=""><span>去这里</span></a></div>';
+      const markers = [{
+        title: '<p class="marker-title">卫生间</p>',
+        icon: './img/wc.png',
+        position: [113.116716, 22.069819]
+      }];
+      markers.forEach(function (marker) { // 添加点到地图上
+        const newObj = new AMap.Marker({
+          map: map,
+          icon: marker.icon,
+          position: [marker.position[0], marker.position[1]],
+          offset: new AMap.Pixel(-12, -36)
+        });
+        newObj.content = '<div class="marker-box">' + marker.title + _html + '</div>';
+        newObj.on('click', markerClick);
+        newObj.emit('click', {
+          target: newObj
+        });
+      });
+      map.setFitView(); // 自动适配到合适视野范围；无参数，默认包括所有覆盖物的情况
+    } else if ($(this).index() == 2) {
+      // ---------------------------------便利店------------------------------------------------------------------
+      map.clearMap(); // 清除地图覆盖物
+      const _html = '<div class="marker-btn-box"><a href="./msg.html" class="marker-btn gotoBtn"><img src="./img/goto_w.png" alt=""><span>去这里</span></a></div>';
+      const markers = [{
+        title: '<p class="marker-title">便利店</p>',
+        icon: './img/shop.png',
+        position: [113.114742, 22.070709]
+      }];
+      markers.forEach(function (marker) { // 添加点到地图上
+        const newObj = new AMap.Marker({
+          map: map,
+          icon: marker.icon,
+          position: [marker.position[0], marker.position[1]],
+          offset: new AMap.Pixel(-12, -36)
+        });
+        newObj.content = '<div class="marker-box">' + marker.title + _html + '</div>';
+        newObj.on('click', markerClick);
+        newObj.emit('click', {
+          target: newObj
+        });
+      });
+      map.setFitView(); // 自动适配到合适视野范围；无参数，默认包括所有覆盖物的情况
+    } else if ($(this).index() == 3) {
+      // ---------------------------------行李寄存------------------------------------------------------------------
+      map.clearMap(); // 清除地图覆盖物
+      const _html = '<div class="marker-btn-box"><a href="./msg.html" class="marker-btn gotoBtn"><img src="./img/goto_w.png" alt=""><span>去这里</span></a></div>';
+      const markers = [{
+        title: '<p class="marker-title">行李寄存</p>',
+        icon: './img/bag.png',
+        position: [113.115053, 22.070834]
+      }];
+      markers.forEach(function (marker) { // 添加点到地图上
+        const newObj = new AMap.Marker({
+          map: map,
+          icon: marker.icon,
+          position: [marker.position[0], marker.position[1]],
+          offset: new AMap.Pixel(-12, -36)
+        });
+        newObj.content = '<div class="marker-box">' + marker.title + _html + '</div>';
+        newObj.on('click', markerClick);
+        newObj.emit('click', {
+          target: newObj
+        });
+      });
+      map.setFitView(); // 自动适配到合适视野范围；无参数，默认包括所有覆盖物的情况
+    }
+  });
+
+  // 去这里
+  $('.gotoBtn').bind('click', function (e) {
+    // gotoFun(e);
+    console.log('00000000000000')
+  });
+  // 预定
+  $('.yuyueBtn').bind('click', function (e) {
+    // yuyueFun(e);
+    console.log($(this))
+  });
+  // 语音
+  $('.yuyinBtn').bind('click', function (e) {
+    // yuyinFun(e);
+    console.log($(this))
+  });
+
+  //
+  if ('serviceWorker' in navigator) {
+     navigator.serviceWorker.register('./map-cache.js');
+     console.log("support serviceWorker...")
+  }
+
+});
